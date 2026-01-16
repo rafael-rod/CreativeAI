@@ -3,10 +3,11 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ImageIcon, Volume2, Home, Sparkles, Menu, X } from "lucide-react"
+import { ImageIcon, Volume2, Home, Sparkles, Menu, X, LogOut } from "lucide-react"
 
 const navigation = [
   {
@@ -98,12 +99,17 @@ export function AppSidebar() {
           </ScrollArea>
 
           {/* Footer */}
-          {/* <div className="border-t border-sidebar-border p-4">
-            <div className="rounded-lg bg-sidebar-accent/50 p-3"> */}
-              {/* <p className="text-xs text-sidebar-foreground/60">Powered by</p> */}
-              {/* <p className="text-sm font-medium text-sidebar-foreground">Cloudflare Workers AI</p> */}
-            {/* </div>
-          </div> */}
+          {/* Footer */}
+          <div className="border-t border-sidebar-border p-4">
+            <Button 
+              variant="outline" 
+              className="w-full justify-start gap-2"
+              onClick={() => signOut({ callbackUrl: "/login" })}
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Cerrar Sesión</span>
+            </Button>
+          </div>
         </div>
       </aside>
     </>
