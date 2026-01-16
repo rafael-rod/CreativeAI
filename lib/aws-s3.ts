@@ -29,7 +29,12 @@ export function getS3Client(): S3Client {
   return s3Client
 }
 
-export async function uploadToS3(buffer: Buffer | ArrayBuffer, key: string, contentType: string): Promise<string> {
+export async function uploadToS3(
+  buffer: Buffer | ArrayBuffer, 
+  key: string, 
+  contentType: string,
+  metadata: Record<string, string> = {}
+): Promise<string> {
   const client = getS3Client()
   const bucket = process.env.AWS_S3_BUCKET
 
@@ -45,6 +50,7 @@ export async function uploadToS3(buffer: Buffer | ArrayBuffer, key: string, cont
       Key: key,
       Body: body,
       ContentType: contentType,
+      Metadata: metadata, // <-- Aquí enviamos los metadatos (como el prompt)
     }),
   )
 

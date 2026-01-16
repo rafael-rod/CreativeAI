@@ -21,13 +21,15 @@ export async function POST(request: NextRequest) {
     // Upload to S3
     const timestamp = Date.now()
     const key = `images/${timestamp}-${crypto.randomUUID()}.png`
-    const s3Url = await uploadToS3(imageBuffer, key, "image/png")
+    const s3Url = await uploadToS3(imageBuffer, key, "image/png", {
+      prompt: prompt.substring(0, 1500) // Aseguramos que no exceda límites de headers
+    })
 
-    // Save to DynamoDB
-    const id = await saveGeneratedContent("image", prompt, s3Url)
+    // NOTA: La Lambda S3-Trigger se encarga de guardar en DynamoDB.
+    // No llamamos a saveGeneratedContent aquí.
 
     return NextResponse.json({
-      id,
+      id: key, // Usamos el key como ID temporal
       url: s3Url,
       message: "Image generated successfully",
     })

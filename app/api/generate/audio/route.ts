@@ -35,43 +35,10 @@
 //         body: JSON.stringify({
 //           prompt:text,
 //           language: "ES",
-//         }),
-//       },
-//     )
-
-//     if (!response.ok) {
-//       const errorData = await response.json()
-//       throw new Error(errorData.errors?.[0]?.message || "Failed to generate audio")
-//     }
-
-//     const audioBuffer = await response.arrayBuffer()
-
-//     // Upload to S3
-//     const timestamp = Date.now()
-//     const key = `audio/${timestamp}-${crypto.randomUUID()}.mp3`
-//     const s3Url = await uploadToS3(audioBuffer, key, "audio/mpeg")
-
-//     // Save to DynamoDB
-//     const id = await saveGeneratedContent("audio", text, s3Url)
-
-//     return NextResponse.json({
-//       id,
-//       url: s3Url,
-//       message: "Audio generated successfully",
-//     })
-//   } catch (error) {
-//     console.error("Error generating audio:", error)
-//     return NextResponse.json(
-//       { message: error instanceof Error ? error.message : "Failed to generate audio" },
-//       { status: 500 },
-//     )
-//   }
-// }
-
 
 import { type NextRequest, NextResponse } from "next/server"
 import { uploadToS3 } from "@/lib/aws-s3"
-import { saveGeneratedContent } from "@/lib/aws-dynamodb"
+
 
 export async function POST(request: NextRequest) {
   try {
@@ -145,13 +112,15 @@ export async function POST(request: NextRequest) {
     // Subir a S3 como WAV
     const timestamp = Date.now()
     const key = `audio/${timestamp}-${crypto.randomUUID()}.mp3`
-    const s3Url = await uploadToS3(audioBuffer, key, "audio/mp3")
+    const s3Url = await uploadToS3(audioBuffer, key, "audio/mp3", {
+      prompt: text.substring(0, 1500)
+    })
 
-    // Guardar en DynamoDB
-    const id = await saveGeneratedContent("audio", text, s3Url)
+    // NOTA: Ya no guardamos en DynamoDB aquí. La Lambda lo hace.
+
 
     return NextResponse.json({
-      id,
+      id: key, // ID temporal
       url: s3Url,
       message: "Audio generated successfully",
     })
