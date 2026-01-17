@@ -20,6 +20,8 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
+
+RUN pnpm add @prisma/client@latest
 RUN pnpm prisma generate
 RUN pnpm build
 
