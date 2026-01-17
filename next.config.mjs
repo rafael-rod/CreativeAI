@@ -8,6 +8,7 @@ const nextConfig = {
     unoptimized: true,
   },
   experimental: {
+    serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
     serverActions: {
       bodySizeLimit: '10mb',
     },
